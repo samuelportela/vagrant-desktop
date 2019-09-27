@@ -11,7 +11,6 @@ This project aims to facilitate the creation of a reproducible desktop environme
 For using this automated desktop, you should first install the following softwares on your host machine:
 
 - [Git BASH](https://gitforwindows.org)
-- [Cntlm](http://cntlm.sourceforge.net)
 - [Vagrant](https://www.vagrantup.com) (Please use version 2.2.3 instead of 2.2.4, since version 2.2.4 has issues while configuring environment)
 - [VirtualBox](https://www.virtualbox.org)
 
@@ -47,9 +46,39 @@ cd c:\development\dgreadiness_v3.6
 
 **Regardless of which option above you have followed, in case you need to reboot Windows 10, those steps need to be executed again in order to have VirtualBox working properly.**
 
-## How to prepare?
+## How to connect using a proxy?
 
-Open some text editor **as Administrator** and paste the content below into "C:\Program Files (x86)\Cntlm\cntlm.ini" **remembering to replace <YOUR_CORPORATE_ID> with your own Corporate ID**:
+To setup your host machine to send the requests through a proxy that requires authentication, first add the following "User variables" to the list of your host environment variables (on Windows 7, go to Start > Control Panel > System > Advanced system settings > Environment Variables... > User variables):
+
+```
+https_proxy=http://localhost:3128
+http_proxy=http://localhost:3128
+ftp_proxy=http://localhost:3128
+no_proxy=localhost,127.0.0.1
+```
+
+Now, please follow the steps described in one of the options bellow:
+
+### Option 1 - Using Px
+
+1. Make sure no other tool is using 3128 port. For isntance, if you are already using Cntlm, please uninstall it.
+2. Download the ZIP package available for [Px](https://github.com/genotrance/px/releases/latest)
+3. Run the following commands to setup Px on your host machine:
+
+```
+./px --workers=10 --threads=500 --save
+./px --install
+```
+
+4. Next time you reboot the host machine, Px will be started automatically.
+
+**Next time you change network password, a simple "vagrant up" command will be enough to make all tools inside vagrant-desktop connect through the proxy.**
+
+### Option 2 - Using Cntlm
+
+1. Make sure no other tool is using 3128 port. For isntance, if you are already using Px, please uninstall it.
+2. Download [Cntlm](http://cntlm.sourceforge.net)
+3. Open some text editor **as Administrator** and paste the content below into "C:\Program Files (x86)\Cntlm\cntlm.ini" **remembering to replace <YOUR_CORPORATE_ID> with your own Corporate ID**:
 
 ```
 Username        <YOUR_CORPORATE_ID>
@@ -61,24 +90,18 @@ NoProxy         localhost, 127.0.0.*, 10.*, <OTHER_ADDRESSES_NOT_REQUIRING_PROXY
 Listen          0.0.0.0:3128
 ```
 
-Open Git Bash (all the commands described in this documentation should be executed using Git Bash). Run the command below to generate the NTLMv2 password (ATTENTION: you will have to type your network password **and the password may be displayed on your screen as it is**):
+4. Open Git Bash (all the commands described in this documentation should be executed using Git Bash). Run the command below to generate the NTLMv2 password (ATTENTION: you will have to type your network password **and the password may be displayed on your screen as it is**):
 
 ```bash
 /c/Program\ Files\ \(x86\)/Cntlm/cntlm.exe -c /c/Program\ Files\ \(x86\)/Cntlm/cntlm.ini -H
 ```
 
-Copy the output of the command above to the "PassNTLMv2" line of "C:\Program Files (x86)\Cntlm\cntlm.ini" file. Save the file and then restart the service called "Cntlm Authentication Proxy".
+5. Copy the output of the command above to the "PassNTLMv2" line of "C:\Program Files (x86)\Cntlm\cntlm.ini" file. Save the file and then restart the service called "Cntlm Authentication Proxy".
+6. Next time you reboot the host machine, Cntlm will be started automatically.
 
-**If you change your network password, please redo the process above to update the password used for authenticating to the proxy.**
+**In case you decided to use Cntlm, if you change your network password, please redo the process above to update the password used for authenticating to the proxy.**
 
-Add the following "User variables" to your host environment (on Windows 7, go to Start > Control Panel > System > Advanced system settings > Environment Variables... > User variables):
-
-```
-https_proxy=http://localhost:3128
-http_proxy=http://localhost:3128
-ftp_proxy=http://localhost:3128
-no_proxy=localhost,127.0.0.1
-```
+## How to prepare?
 
 Run the commands below to create a working directory and convert the combined certificate file:
 
@@ -172,7 +195,7 @@ vagrant up --provision
 
 ## What if I use some application that need Proxy or Certificate configuration?
 
-- For **proxy** setup, configure your application to use the Cntlm proxy application that has already been configured in your host machine by pointing it to host **10.0.2.2** and port **3128**.
+- For **proxy** setup, configure your application to use the proxy application that has already been configured in your host machine by pointing it to host **10.0.2.2** and port **3128**.
 - For **certificates** setup, import the ca-certificates (Authorities) located under the **~/ca-certificates** directory.
 
 ## How to setup IntelliJ?
