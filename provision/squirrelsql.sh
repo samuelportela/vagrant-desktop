@@ -1,7 +1,8 @@
 #!/bin/bash
-wget --no-verbose 'https://kent.dl.sourceforge.net/project/squirrel-sql/1-stable/3.9.0-plainzip/squirrelsql-3.9.0-standard.zip' -O /tmp/squirrelsql-3.9.0-standard.zip
-sudo unzip /tmp/squirrelsql-3.9.0-standard.zip -d /opt/
-sudo mv /opt/squirrelsql-3.9.0-standard/ /opt/squirrelsql
+wget --no-verbose 'https://netix.dl.sourceforge.net/project/squirrel-sql/1-stable/4.0.0-plainzip/squirrelsql-4.0.0-standard.zip' -O /tmp/squirrelsql-4.0.0-standard.zip
+sudo unzip /tmp/squirrelsql-4.0.0-standard.zip -d /opt/
+sudo rm -rf /opt/squirrelsql
+sudo mv /opt/squirrelsql-4.0.0-standard/ /opt/squirrelsql
 
 sudo sh -s << 'EOF'
 echo '[Desktop Entry]
